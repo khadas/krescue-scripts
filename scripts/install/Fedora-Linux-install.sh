@@ -10,10 +10,10 @@
 #  or local usage
 #  ssh root@krescue.local < Fedora-Linux-install.sh
 
-# install Workstation version example
+# install Workstation edition example
 # TYPE=Workstation curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 
-# install server version by default
+# install server edition by default
 # curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 
 set -e -o pipefail
