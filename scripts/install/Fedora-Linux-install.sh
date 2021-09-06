@@ -6,15 +6,15 @@
 
 ## USAGE examples
 
-#  curl -jkL https://raw.githubusercontent.com/khadas/krescue/master/scripts/Fedora-Linux-install.sh | sh -s -
+#  curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 #  or local usage
 #  ssh root@krescue.local < Fedora-Linux-install.sh
 
 # install Workstation version example
-# TYPE=Workstation curl -jkL https://raw.githubusercontent.com/khadas/krescue/master/scripts/Fedora-Linux-install.sh | sh -s -
+# TYPE=Workstation curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 
 # install server version by default
-# curl -jkL https://raw.githubusercontent.com/khadas/krescue/master/scripts/Fedora-Linux-install.sh | sh -s -
+# curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 
 set -e -o pipefail
 
@@ -54,9 +54,8 @@ done
 
 SRC=$DL/${REL%-*}/$TYPE/aarch64/images/Fedora-$TYPE-$REL.aarch64.raw.xz
 
-DL=http://router_:8081/img/
-SRC=$DL/Fedora-$TYPE-$REL.aarch64.raw.xz
-SRC=$DL/Fedora-$TYPE-$REL.aarch64.raw.zst
+#DL=http://router_:8081/img/
+#SRC=$DL/Fedora-$TYPE-$REL.aarch64.raw.xz
 
 IMG=$(basename "$SRC")
 unpack=pixz
