@@ -11,7 +11,7 @@
 #  ssh root@krescue.local < Fedora-Linux-install.sh
 
 # install Workstation edition example
-# TYPE=Workstation curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
+# curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | TYPE=Workstation sh -s -
 
 # install server edition by default
 # curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
