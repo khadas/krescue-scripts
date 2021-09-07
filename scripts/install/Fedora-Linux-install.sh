@@ -9,12 +9,29 @@
 #  curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
 #  or local usage
 #  ssh root@krescue.local < Fedora-Linux-install.sh
+#  or Workstation edition
+#  ssh root@krescue.local TYPE=Workstation shell < Fedora-Linux-install.sh
 
 # install Workstation edition example
 # curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | TYPE=Workstation sh -s -
 
 # install server edition by default
 # curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
+
+## PROBLEMS
+
+# + display 4k not usable plz use 2k
+# + ethernet bug can solved with
+# sudo rmmod dwmac_generic
+# sudo modprobe dwmac_generic
+# + default kernel old have many bugs
+# sudo dnf update
+# + need manual update dtb for UEFI boot
+# sudo cp -av /boot/dtb/rockchip /boot/efi/dtb
+# sudo cp -av /boot/dtb/amlogic  /boot/efi/dtb
+# + VIM3 VIM3L no sound kernel
+# # CONFIG_COMMON_CLK_AXG_AUDIO is not set
+# need rebuild kernel
 
 set -e -o pipefail
 
@@ -33,6 +50,7 @@ sleep 1
 # fedora have xfs boot partition - cool ;-)
 modules_download_ipk fs
 modprobe xfs || exit 1
+modprobe btrfs || exit 1
 
 #echo partx -d $DST -v
 #partx -d $DST --nr :10 -v || sfdisk --delete -Wauto -wauto -f $DST || true
@@ -54,8 +72,12 @@ done
 
 SRC=$DL/${REL%-*}/$TYPE/aarch64/images/Fedora-$TYPE-$REL.aarch64.raw.xz
 
-#DL=http://router_:8081/img/
-#SRC=$DL/Fedora-$TYPE-$REL.aarch64.raw.xz
+[ "$TEST" ] && {
+echo "TEST $SRC replace to"
+DL=http://router_:8081/img/
+SRC=$DL/Fedora-$TYPE-$REL.aarch64.raw.xz
+echo "> $SRC"
+}
 
 IMG=$(basename "$SRC")
 unpack=pixz
@@ -81,19 +103,24 @@ blkid
 #/dev/mmcblk1p1 : start=        2048, size=     1228800, type=6, bootable
 
 ## uboot efi boot need get dtb from efi part or cant boot kernel with wrong dtb
-mkdir -p 1 2
+mkdir -p 1 2 3
 mount ${DST}p1 1
 mount ${DST}p2 2
+mount ${DST}p2 3
 mkdir -p 1/dtb
 # copy amlogic and rockhip dtb's
 cp -a 2/dtb/aml* 2/dtb/rock* 1/dtb
+# copy wifi fw
+cp -a /lib/firmware/brcm 3/root/lib/firmware
 
 # more verbose boot
 #sed -i "s/ rhgb quiet console=tty0//" 2/grub2/grub.cfg
 #grep kernelopts= 2/grub2/grub.cfg
+#KERNEL_ARGS=video=HDMI-A-1:1920x1080@60e
+
 for c in 2/loader/entries/*.conf; do
     [ -s "$c" ] || continue
-    sed -i "s/ rhgb quiet console=tty0//" $c
+    sed -i "s/ rhgb quiet console=tty0/$KERNEL_ARGS/" $c
     echo "efi grub config: $c"
     cat $c
 done
@@ -105,7 +132,7 @@ echo ttyAML0 >> system/etc/securetty
 echo ttyFIQ0 >> system/etc/securetty
 }
 
-umount 1 2
+umount 1 2 3
 
 #exit 0
 
