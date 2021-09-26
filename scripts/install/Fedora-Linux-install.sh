@@ -4,6 +4,10 @@
 
 #= Fedora-Linux-install
 
+#@ DESCRIPTION
+
+#% BOARDS VIM1 VIM2 VIM3 VIM3L Edge #
+
 ## USAGE examples
 
 #  curl -jkL https://raw.githubusercontent.com/khadas/krescue-scripts/master/scripts/install/Fedora-Linux-install.sh | sh -s -
@@ -197,3 +201,5 @@ echo "Fedira Linux installation for $BOARD : DONE"
 blkid
 # DONE
 echo "plz reboot device"
+
+## __END__
