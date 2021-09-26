@@ -4,6 +4,10 @@
 
 #= AltLinux-install
 
+#@ DESCRIPTION
+
+#% BOARDS VIM1 VIM2 VIM3 VIM3L Edge #
+
 ## USAGE examples
 
 #  curl -jkL https://raw.githubusercontent.com/khadas/krescue/master/scripts/AltLinux-install.sh | sh -s -
