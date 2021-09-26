@@ -1,4 +1,5 @@
 # Krescue scripts
 
-# rel 0.2
+Online scripts collection for Krescue
 
+## rel v0.2
