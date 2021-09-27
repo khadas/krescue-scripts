@@ -68,13 +68,16 @@ echo "[e] $@">&2
 exit 1
 }
 
-BOARD=$(tr -d '\0' < /sys/firmware/devicetree/base/model || echo Unknown)
-echo "ArchLinux installation for $BOARD ... > $DST"
+[ "$BOARD" ] || \
+BOARD=$(boarn_name 2>/dev/null || echo Undefined)
+
+echo "ArchLinux installation for: $BOARD ... > $DST"
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
 
-# checks 
-echo "check network connection..."
-ping -c1 -w2 1.1.1.1 || (echo plz check or setup network connection; exit 1)
+# checks
+# echo "check network connection..."
+net_check_default_route 1>/dev/null 2>&1 || \
+    FAIL "Please check or setup network connection"
 # stop prev session
 pkill -f downloader || true
 sleep 1
