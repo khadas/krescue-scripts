@@ -5,8 +5,8 @@
 #= Fedora-Linux-install
 
 DESCRIPTION="\
-Fedora
-======
+Fedora Linux
+============
 
 Fedora is a Linux distribution developed by the community-supported
 Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
@@ -71,7 +71,7 @@ exit 1
 [ "$BOARD" ] || \
 BOARD=$(board_name 2>/dev/null || echo Undefined)
 
-echo "ArchLinux installation for: $BOARD ... > $DST"
+echo "Fedora Linux installation for: $BOARD ... > $DST"
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
 
 # checks
