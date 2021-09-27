@@ -69,7 +69,7 @@ exit 1
 }
 
 [ "$BOARD" ] || \
-BOARD=$(boarn_name 2>/dev/null || echo Undefined)
+BOARD=$(board_name 2>/dev/null || echo Undefined)
 
 echo "ArchLinux installation for: $BOARD ... > $DST"
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
