@@ -4,9 +4,13 @@
 
 #= Fedora-Linux-install
 
-#@ DESCRIPTION
+DESCRIPTION="\
+Fedora is a Linux distribution developed by the community-supported
+Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
+IBM, with additional support from other companies.
+" #DESCRIPTION_END
 
-#% BOARDS VIM1 VIM2 VIM3 VIM3L Edge #
+BOARDS="VIM1 VIM2 VIM3 VIM3L Edge #"
 
 ## USAGE examples
 
@@ -53,10 +57,17 @@
 
 set -e -o pipefail
 
-DST=$(mmc_disk)
+[ "$DST" ] || \
+DST=$(mmc_disk 2>/dev/null || echo /dev/null)
 
-BOARD=$(tr -d '\0' < /sys/firmware/devicetree/base/model || echo Khadas)
+FAIL(){
+echo "[e] $@">&2
+exit 1
+}
+
+BOARD=$(tr -d '\0' < /sys/firmware/devicetree/base/model || echo Unknown)
 echo "ArchLinux installation for $BOARD ... > $DST"
+echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
 
 # checks 
 echo "check network connection..."
