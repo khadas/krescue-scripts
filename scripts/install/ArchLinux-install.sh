@@ -4,7 +4,15 @@
 
 #= ArchLinux-install
 
-#@ DESCRIPTION
+DESCRIPTION="\
+Arch Linux
+==========
+
+Arch Linux ARM is a port of Arch Linux for ARM processors. Its design
+philosophy is 'simplicity and full control to the end user,' and like its
+parent operating system Arch Linux, aims to be very Unix-like.
+"
+#DESCRIPTION_END
 
 #% BOARDS VIM1 VIM2 VIM3 VIM3L Edge #
 
@@ -16,12 +24,25 @@
 
 set -e -o pipefail
 
-BOARD=$(tr -d '\0' < /sys/firmware/devicetree/base/model || echo Khadas)
-echo "ArchLinux installation for $BOARD ..."
+[ "$DST" ] || \
+DST=$(mmc_disk 2>/dev/null || echo /dev/null)
 
-# checks 
-echo "check network connection..."
-ping -c1 -w2 1.1.1.1 || (echo plz check or setup network connection; exit 1)
+FAIL(){
+echo "[e] $@">&2
+exit 1
+}
+
+[ "$BOARD" ] || \
+BOARD=$(board_name 2>/dev/null || echo Undefined)
+
+echo "Arch Linux installation for: $BOARD ... > $DST"
+echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
+
+# checks
+# echo "check network connection..."
+net_check_default_route 1>/dev/null 2>&1 || \
+    FAIL "Please check or setup network connection"
+
 # stop prev session
 pkill -f downloader || true
 sleep 1
