@@ -5,6 +5,9 @@
 #= Fedora-Linux-install
 
 DESCRIPTION="\
+Fedora
+======
+
 Fedora is a Linux distribution developed by the community-supported
 Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
 IBM, with additional support from other companies.
