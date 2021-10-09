@@ -11,6 +11,9 @@ Fedora Linux
 Fedora is a Linux distribution developed by the community-supported
 Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
 IBM, with additional support from other companies.
+
+    REL=34-1.2
+    TYPES=Server | Workstation
 " #DESCRIPTION_END
 
 BOARDS="VIM1 VIM2 VIM3 VIM3L Edge #"
@@ -60,6 +63,9 @@ BOARDS="VIM1 VIM2 VIM3 VIM3L Edge #"
 
 set -e -o pipefail
 
+[ "$BOARD" ] || \
+BOARD=$(board_name 2>/dev/null || echo Undefined)
+
 [ "$DST" ] || \
 DST=$(mmc_disk 2>/dev/null || echo /dev/null)
 
@@ -68,10 +74,31 @@ echo "[e] $@">&2
 exit 1
 }
 
-[ "$BOARD" ] || \
-BOARD=$(board_name 2>/dev/null || echo Undefined)
+GUI_SEL=/tmp/gui_sel
 
-echo "Fedora Linux installation for: $BOARD ... > $DST"
+[ "$REL" ] || \
+    REL=34-1.2
+
+TITLE="Fedora Linux $REL - installation for: $BOARD ..."
+
+[ "$GUI" ] && {
+
+[ "$TYPE" ] || \
+    dialog --title "$TITLE" --menu \
+    "Select installation TYPE:" 0 0 0 \
+    "Server" "" \
+    "Workstation" "" \
+    2>$GUI_SEL || exit 1
+    TYPE=$(cat $GUI_SEL 2>/dev/null)
+    clear
+}
+
+[ "$TYPE" ] || \
+    TYPE=Server
+[ "$DL" ] || \
+    DL=https://download.fedoraproject.org/pub/fedora/linux/releases
+
+echo "$TITLE +$TYPE > $DST"
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
 
 # checks
@@ -93,13 +120,6 @@ modprobe btrfs || exit 1
 for p in $(grep -e "^${DST}p." /proc/mounts); do
     [ -b "$p" ] && echo umount $p && umount $p
 done
-
-[ "$REL" ] || \
-    REL=34-1.2
-[ "$TYPE" ] || \
-    TYPE=Server
-[ "$DL" ] || \
-    DL=https://download.fedoraproject.org/pub/fedora/linux/releases
 
 #TYPE=Workstation
 #TYPE=Server
@@ -213,7 +233,7 @@ case $BOARD in
 spi_update_uboot online -k && echo need poweroff and poweron device again
 esac
 
-echo "Fedira Linux installation for $BOARD : DONE"
+echo "$TITLE : DONE"
 # again show parts
 blkid
 # DONE
