@@ -188,8 +188,8 @@ echo "curl -A downloader -jkL $SRC | pixz -dc > $DST"
 curl -A downloader -jkL "$SRC" | pixz -dc > $DST || FAIL decompression
 echo wait...
 sync
-sfdisk --dump $DST | tee /tmp/parts.data
-partx -u $DST -v || true
+sfdisk --dump $DST | tee /tmp/parts.data | sfdisk --force $DST
+#partx -u $DST -v || true
 blkid | tee /tmp/parts.type
 mount ${DST}p1 $BOOT || FAIL "mount boot"
 # deactivate EFI
@@ -205,7 +205,7 @@ esac
 
 #logo
 #curl -A downloader -jkL http://dl.khadas.com/.dl/logos/armbian.bmp.gz -o $BOOT/splash.bmp
-cp $BOOT/boot/boot.bmp $BOOT/boot/splash.bmp || true
+#cp $BOOT/boot/boot.bmp $BOOT/splash.bmp || true
 
 F=$BOOT/boot/armbian_first_run.txt.template
 T=$BOOT/boot/armbian_first_run.txt
