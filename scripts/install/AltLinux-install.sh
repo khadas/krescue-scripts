@@ -130,8 +130,8 @@ echo "curl -A downloader -jkL $SRC | pixz -dc > $DST"
 curl -A downloader -jkL "$SRC" | pixz -dc > $DST || FAIL decompression
 echo wait...
 sync
-sfdisk --dump $DST | tee /tmp/parts.data
-partx -u $DST -v || true
+sfdisk --dump $DST | tee /tmp/parts.data | sfdisk --force $DST
+#partx -u $DST -v || true
 blkid | tee /tmp/parts.type
 mount ${DST}p1 $BOOT || FAIL "mount boot"
 # deactivate EFI

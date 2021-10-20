@@ -150,8 +150,8 @@ curl -A downloader -jkL $SRC | $unpack -dc > $DST
 echo wait...
 sync
 
-sfdisk --dump $DST | tee /tmp/parts.data
-partx -u $DST -v || true
+sfdisk --dump $DST | tee /tmp/parts.data | sfdisk --force $DST
+#partx -u $DST -v || true
 blkid | tee /tmp/parts.type
 
 
