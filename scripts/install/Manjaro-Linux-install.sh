@@ -13,7 +13,7 @@ replacement to Windows or MacOS with different Desktop Environments.
 
     REL=p10 from 20210912
 
-    TYPES= gnome | kde-plazma | mate | minimal | sway | xfce
+    TYPES= gnome | kde-plasma | mate | minimal | sway | xfce
     BOARDS= VIM2 | VIM3
 
 " #DESCRIPTION_END
@@ -25,7 +25,7 @@ BOARDS="VIM2 VIM3 #"
 
 #  curl -jkL https://raw.githubusercontent.com/khadas/krescue/master/scripts/Manjaro-Linux-install.sh | sh -s -
 #  or local usage
-#  ssh root@krescue.local < AltLinux-install.sh
+#  ssh root@krescue.local < Manjaro-Linux-install.sh
 
 set -e -o pipefail
 
@@ -66,7 +66,7 @@ TITLE="Manjaro-Linux $REL($REL_DATE) - installation for: $BOARD ..."
     dialog --title "$TITLE" --menu \
     "Select installation TYPE:" 0 0 0 \
     "gnome" "" \
-    "kde-plazma" "" \
+    "kde-plasma" "" \
     "mate" "" \
     "minimal" "" \
     "sway" "" \
