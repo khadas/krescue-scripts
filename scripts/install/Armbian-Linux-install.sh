@@ -21,7 +21,7 @@ https://armbian.com https://docs.armbian.com https://forum.armbian.com
 " #DESCRIPTION_END
 
 LABEL="Armbian"
-BOARDS="VIM1 VIM2 VIM3 Edge #"
+BOARDS="VIM1 VIM2 VIM3 VIM3L Edge #"
 
 ## USAGE examples
 
