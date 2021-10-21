@@ -16,7 +16,7 @@ https://armbian.com https://docs.armbian.com https://forum.armbian.com
     REL=? from Aug 26 2021
 
     TYPES= Bullseye | Buster | Focal | Hirsute ...
-    BOARDS= VIM1 | VIM2 | VIM3 | Edge
+    BOARDS= VIM1 | VIM2 | VIM3 | VIM3L | Edge
 
 " #DESCRIPTION_END
 
