@@ -33,8 +33,19 @@ BOARDS="VIM1 VIM2 VIM3 Edge #"
 
 set -e -o pipefail
 
+GET="curl -A krescue_downloader -jkL"
+
 [ "$BOARD" ] || \
 BOARD=$(board_name 2>/dev/null || echo Undefined)
+
+case $BOARD in
+    VIM1)board=vim1;;
+    VIM2)board=vim2;;
+    VIM3)board=vim3;;
+    VIM3L)board=vim3l;;
+    Edge)board=edge;;
+    *)boar=$BOARD
+esac
 
 [ "$DST" ] || \
 DST=$(mmc_disk 2>/dev/null || echo /dev/null)
@@ -68,6 +79,13 @@ TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ..."
 
 [ "$TYPE" ] || \
     case $BOARD in
+	VIM3L)
+    dialog --title "$TITLE" --menu \
+    "Select installation TYPE:" 0 0 0 \
+    "nightly" "Nightly - testing ..." \
+    "archive" "Archive ..." \
+    2>$GUI_SEL || exit 2
+	;;
 	VIM3)
     dialog --title "$TITLE" --menu \
     "Select installation TYPE:" 0 0 0 \
@@ -77,6 +95,8 @@ TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ..."
     "Hirsute_edge_budgie" "Ubuntu - Hirsute Budgie 21.x" \
     "Hirsute_edge_cinnamon" "Ubuntu - Hirsute Cinnamon 21.x" \
     "Hirsute_edge_xfce" "Ubuntu - Hirsute Xfce 21.x" \
+    "nightly" "Nightly - testing ..." \
+    "archive" "Archive ..." \
     2>$GUI_SEL || exit 2
 	;;
 	Edge)
@@ -89,6 +109,8 @@ TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ..."
     "Focal_current_cinnamon" "Ubuntu - Focal Cinnamon 20.x" \
     "Hirsute_edge" "Ubuntu - Hirsute 21.x" \
     "Hirsute_edge_xfce" "Ubuntu - Hirsute Xfce 21.x" \
+    "nightly" "Nightly - testing ..." \
+    "archive" "Archive ..." \
     2>$GUI_SEL || exit 2
 	;;
 	*)# VIM2 VIM1
@@ -103,10 +125,42 @@ TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ..."
     "Hirsute_edge_budgie" "Ubuntu - Hirsute Budgie 21.x" \
     "Hirsute_edge_cinnamon" "Ubuntu - Hirsute Cinnamon 21.x" \
     "Hirsute_edge_xfce" "Ubuntu - Hirsute Xfce 21.x" \
+    "nightly" "Nightly - testing ..." \
+    "archive" "Archive ..." \
     2>$GUI_SEL || exit 2
 	;;
     esac
     TYPE=$(cat $GUI_SEL 2>/dev/null)
+
+case "$TYPE" in
+    nightly|archive)
+    MIRROR="/"
+    DL="https://imola.armbian.com"
+
+    # scan http index
+    PRE="/dl/khadas-$board/$TYPE/"
+    PRS=${PRE//\//\\\/}
+    SCAN="$DL$PRE"
+    T="/tmp/$LABEL.$board.$TYPE"
+
+    $GET "$SCAN" -o"$T" || exit 3
+    sed "s/</\n/g" "$T" | grep -o -e \"/\.*\.$FMT\" > $T.list || exit 4
+
+    echo "--title \"$TITLE\" --menu \"Select installation TYPE:\" 0 0 0" > $T.opts
+    sed "s/$PRS//" $T.list | \
+	sed "s/z\"/z\" \"\"/"  >> $T.opts
+
+    case $BOARD in
+	*)
+    dialog --file $T.opts 2>$GUI_SEL || exit 2
+	;;
+    esac
+
+    TYPE=$(cat $GUI_SEL 2>/dev/null)
+    IMAGE="$TYPE"
+    SRC="$SCAN/$IMAGE"
+    ;;
+esac ## Nightly END ##
 
 [ "$MIRROR" ] || \
     dialog --title "$TITLE" \
@@ -161,18 +215,12 @@ mkdir -p $SYS && mount ${DST}p1 $SYS
     ;;
 esac
 
-case $BOARD in
-    VIM1)board=vim1;;
-    VIM2)board=vim2;;
-    VIM3)board=vim3;;
-    VIM3L)board=vim3l;;
-    Edge)board=edge;;
-    *)boar=$BOARD
-esac
 
 # can chouse any other rootfs source
-IMAGE=$TYPE
-SRC=$DL$MIRROR/khadas-$board/$IMAGE
+[ "$IMAGE" ] || \
+    IMAGE=$TYPE
+[ "$SRC" ] || \
+    SRC=$DL$MIRROR/khadas-$board/$IMAGE
 
 [ "$TEST" ] && {
 echo "TEST $SRC replace to"
@@ -184,8 +232,8 @@ echo "> $SRC"
 echo "download and extract $SRC"
 case $FMT in
     img*)
-echo "curl -A downloader -jkL $SRC | pixz -dc > $DST"
-curl -A downloader -jkL "$SRC" | pixz -dc > $DST || FAIL decompression
+echo "$GET $SRC | pixz -dc > $DST"
+$GET "$SRC" | pixz -dc > $DST || FAIL decompression
 echo wait...
 sync
 sfdisk --dump $DST | tee /tmp/parts.data | sfdisk --force $DST
@@ -199,7 +247,7 @@ mount ${DST}p1 $BOOT || FAIL "mount boot"
 #mount ${DST}p2 $SYS || FAIL "mount system root"
     ;;
     *) # tar
-curl -A downloader -jkL $SRC | pixz -dc | tar -xf- -C $SYS
+$GET $SRC | pixz -dc | tar -xf- -C $SYS
     ;;
 esac
 
