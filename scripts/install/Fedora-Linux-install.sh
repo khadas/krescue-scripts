@@ -12,7 +12,7 @@ Fedora is a Linux distribution developed by the community-supported
 Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
 IBM, with additional support from other companies.
 
-    REL=34-1.2
+    REL=35-1.2 NOTE: onboard audio still missed!
     TYPES=Server | Workstation
 " #DESCRIPTION_END
 
@@ -77,7 +77,8 @@ exit 1
 GUI_SEL=/tmp/gui_sel
 
 [ "$REL" ] || \
-    REL=34-1.2
+    REL=35-1.2
+#    REL=34-1.2
 
 TITLE="Fedora Linux $REL - installation for: $BOARD ..."
 
@@ -238,5 +239,7 @@ echo "$TITLE : DONE"
 blkid
 # DONE
 echo "plz reboot device"
+
+exit 0
 
 ## __END__
