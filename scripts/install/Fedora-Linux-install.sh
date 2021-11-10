@@ -12,7 +12,7 @@ Fedora is a Linux distribution developed by the community-supported
 Fedora Project which is sponsored primarily by Red Hat, a subsidiary of
 IBM, with additional support from other companies.
 
-    REL=35-1.2 NOTE: onboard audio still missed!
+    REL= 35-1.2 | 34-1.2 | 33-1.3
     TYPES=Server | Workstation
 " #DESCRIPTION_END
 
@@ -76,13 +76,20 @@ exit 1
 
 GUI_SEL=/tmp/gui_sel
 
+TITLE="Fedora Linux $REL installation for: $BOARD ..."
+
+[ "$GUI" ] && {
+
 [ "$REL" ] || \
     REL=35-1.2
 #    REL=34-1.2
-
-TITLE="Fedora Linux $REL - installation for: $BOARD ..."
-
-[ "$GUI" ] && {
+    dialog --title "$TITLE" --menu \
+    "Select fedora Release:" 0 0 0 \
+    "35-1.2" "" \
+    "34-1.2" "" \
+    "33-1.3" "" \
+    2>$GUI_SEL || exit 1
+    REL=$(cat $GUI_SEL 2>/dev/null)
 
 [ "$TYPE" ] || \
     dialog --title "$TITLE" --menu \
@@ -91,11 +98,18 @@ TITLE="Fedora Linux $REL - installation for: $BOARD ..."
     "Workstation" "" \
     2>$GUI_SEL || exit 1
     TYPE=$(cat $GUI_SEL 2>/dev/null)
+
     clear
 }
 
+TITLE="Fedora Linux $REL installation for: $BOARD ..."
+
 [ "$TYPE" ] || \
     TYPE=Server
+
+[ "$REL" ] || \
+    REL=35-1.2
+
 [ "$DL" ] || \
     DL=https://download.fedoraproject.org/pub/fedora/linux/releases
 
