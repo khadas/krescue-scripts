@@ -104,7 +104,7 @@ done
 partx -d --nr 0:100 $DEST || true
 
 echo wait...
-#$GET $SRC | $unpack -dc > $DEST || FAIL "write / decompression"
+$GET $SRC | $unpack -dc > $DEST || FAIL "write / decompression"
 echo wait...
 sync
 
