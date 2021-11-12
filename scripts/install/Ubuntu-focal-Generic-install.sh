@@ -103,21 +103,20 @@ done
 
 partx -d --nr 0:100 $DEST || true
 
-$GET $SRC | $unpack -dc > $DEST || FAIL "write / decompression"
-
+echo wait...
+#$GET $SRC | $unpack -dc > $DEST || FAIL "write / decompression"
+echo wait...
 sync
 
-sfdisk --dump $DEST | sfdisk --dump $DEST --force
-
-sleep 1
+gpt_fix $DEST
 
 [ "$GUI" ] && {
 [ "$BOOT" ] || \
     dialog --title "$TITLE" --menu \
     "update/write uboot into:" 0 0 0 \
-    "eMMC" "" \
-    "SPI" "" \
-    "skip" "" \
+    "eMMC" "boot areas" \
+    "SPI" "flash" \
+    "skip" "ignore" \
     2>$GUI_SEL || exit 1
     BOOT=$(cat $GUI_SEL 2>/dev/null)
     clear
@@ -137,3 +136,9 @@ spi_update_uboot online -k && echo need poweroff and poweron device again
 esac
     ;;
 esac
+
+echo "$TITLE - DONE"
+
+blkid $DEST*
+
+sleep 1
