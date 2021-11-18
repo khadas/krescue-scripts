@@ -51,6 +51,7 @@ GUI_SEL=/tmp/gui_sel
 [ "$DST" ] || \
     dialog --title "$TITLE" --menu \
     "Select installation TYPE:" 0 0 0 \
+    "EMMC" "default" \
     "NVME" "" \
     "USB" "" \
     "SD" "" \
@@ -63,6 +64,7 @@ GUI_SEL=/tmp/gui_sel
     DST=NVME
 
 case $DST in
+    EMMC) DEST=$(mmc_disk || true) ;;
     NVME) DEST=$(nvme_disk || true) ;;
     USB)  DEST=$(usb_disk || true)  ;;
     SD)   DEST=$(sd_disk || true)   ;;
