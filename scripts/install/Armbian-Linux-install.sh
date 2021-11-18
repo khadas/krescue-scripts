@@ -47,9 +47,6 @@ case $BOARD in
     *)boar=$BOARD
 esac
 
-[ "$DST" ] || \
-DST=$(mmc_disk 2>/dev/null || echo /dev/null)
-
 FAIL(){
 echo "[e] $@">&2
 exit 1
@@ -182,8 +179,35 @@ clear
 [ "$TYPE" ] || \
     TYPE=Focal_current
 
-echo "$TITLE +$TYPE($MIRROR) > $DST"
+echo "$TITLE +$TYPE($MIRROR)"
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "not suitable for this $BOARD device"
+
+[ "$GUI" ] && {
+[ "$DST" ] || \
+    dialog --title "$TITLE" --menu \
+    "Select installation TYPE:" 0 0 0 \
+    "EMMC" "default" \
+    "NVME" "" \
+    "USB" "" \
+    "SD" "" \
+    2>$GUI_SEL || exit 1
+    DST=$(cat $GUI_SEL 2>/dev/null)
+    clear
+}
+
+[ "$DST" ] || \
+    DST=EMMC
+
+case $DST in
+    EMMC) DEST=$(mmc_disk || true) ;;
+    NVME) DEST=$(nvme_disk || true) ;;
+    USB)  DEST=$(usb_disk || true)  ;;
+    SD)   DEST=$(sd_disk || true)   ;;
+esac
+
+[ -b "$DEST" ] || FAIL "$DST $DEST disk not found"
+
+TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ... $DST($DEST)"
 
 # checks
 # echo "check network connection..."
@@ -193,9 +217,14 @@ net_check_default_route 1>/dev/null 2>&1 || \
 pkill -f downloader || true
 sleep 1
 
-for p in $(grep -e "^${DST}p." /proc/mounts); do
-    [ -b "$p" ] && echo umount $p && umount $p
+(
+grep -o -E $DEST\\S+\\s /proc/mounts 2>/dev/null | while read l ; do
+    CMD umount $l
 done
+) || true
+
+partx -d --nr 0:100 $DEST || true
+
 
 SYS=mnt.system
 BOOT=mnt.boot
@@ -207,11 +236,11 @@ case $FMT in
     ;;
     *)
 # create partitions
-echo "label: dos" | sfdisk $DST
-echo "part1 : start=16M," | sfdisk $DST
+echo "label: dos" | sfdisk $DEST
+echo "part1 : start=16M," | sfdisk $DEST
 # create rootfs
-mkfs.ext4 -L ROOT ${DST}p1 < /dev/null
-mkdir -p $SYS && mount ${DST}p1 $SYS
+mkfs.ext4 -L ROOT ${DEST}p1 < /dev/null
+mkdir -p $SYS && mount ${DEST}p1 $SYS
     ;;
 esac
 
@@ -232,19 +261,19 @@ echo "> $SRC"
 echo "download and extract $SRC"
 case $FMT in
     img*)
-echo "$GET $SRC | pixz -dc > $DST"
-$GET "$SRC" | pixz -dc > $DST || FAIL decompression
+echo "$GET $SRC | pixz -dc > $DEST"
+$GET "$SRC" | pixz -dc > $DEST || FAIL decompression
 echo wait...
 sync
-sfdisk --dump $DST | tee /tmp/parts.data | sfdisk --force $DST
-#partx -u $DST -v || true
+sfdisk --dump $DEST | tee /tmp/parts.data | sfdisk --force $DEST
+#partx -u $DEST -v || true
 blkid | tee /tmp/parts.type
-mount ${DST}p1 $BOOT || FAIL "mount boot"
+mount ${DEST}p1 $BOOT || FAIL "mount boot"
 # deactivate EFI
 #mv $BOOT/EFI $BOOT/.EFI
 # clean boot trash
 #rm -rf $BOOT/*
-#mount ${DST}p2 $SYS || FAIL "mount system root"
+#mount ${DEST}p2 $SYS || FAIL "mount system root"
     ;;
     *) # tar
 $GET $SRC | pixz -dc | tar -xf- -C $SYS
