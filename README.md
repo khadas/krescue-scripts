@@ -2,4 +2,4 @@
 
 Online scripts collection for Krescue
 
-## rel v0.33
+## rel v0.34
