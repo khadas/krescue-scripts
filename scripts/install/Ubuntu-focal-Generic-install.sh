@@ -76,8 +76,9 @@ GET="curl -A krescue_downloader -jkL"
 
 TITLE="Generic Ubuntu $REL - $TYPE :: $DST($DEST) installation for: $BOARD ..."
 
+
 [ "$SRC" ] || \
-    SRC=https://dl.khadas.com/Firmware/Krescue/images/Generic_Ubuntu-minimal-focal_Linux-5.14-rc5_arm64_SD-USB_V1.0.7-210824-develop.img.xz
+    SRC=https://dl.khadas.com/Firmware/Krescue/images/Generic_Ubuntu-minimal-focal_Linux-5.16-rc2_arm64_SD-USB_V1.0.7-211122-develop.img.xz
 
 echo "$TITLE"
 
