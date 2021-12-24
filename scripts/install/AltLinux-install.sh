@@ -46,7 +46,7 @@ GUI_SEL=/tmp/gui_sel
 
 case $REL in
     p10)
-    REL_DATE=20210912
+    REL_DATE=20211212
     FMT=img.xz
     ;;
 esac
