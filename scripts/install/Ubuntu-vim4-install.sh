@@ -77,8 +77,12 @@ GET="curl -A oowow_downloader -jkL"
 TITLE="Ubuntu $REL - $TYPE :: $DST($DEST) installation for: $BOARD ..."
 
 
+[ "$TEST" ] && DL=${DL-usb_:8081/.images/vim4}
+
+DL=${DL-https://dl.khadas.com/.test}
+
 [ "$SRC" ] || \
-    SRC=https://dl.khadas.com/.test/vim4-ubuntu-22.04-server-linux-5.4-fenix-1.0.11-220704-develop.img.xz
+    SRC=$DL/vim4-ubuntu-22.04-server-linux-5.4-fenix-1.0.11-220704-develop.img.xz
 
 echo "$TITLE"
 
@@ -98,6 +102,19 @@ esac
 
 echo "get $SRC | $unpack > $DEST"
 
+CHK=/tmp/scrip_get_check
+$GET -I $SRC > $CHK || FAIL "downlod image problem"
+
+#HTTP/1.1 404 Not Found
+#Server: nginx/1.18.0 (Ubuntu)
+#Date: Mon, 04 Jul 2022 06:29:36 GMT
+#Content-Type: text/html
+#Content-Length: 162
+#Connection: keep-alive
+FILL="-----------------------------------------"
+
+grep " 404 " /tmp/scrip_get_check && FAIL "http image problem $FILL $(head -n1 $CHK)"
+
 (
 grep -o -E $DEST\\S+\\s /proc/mounts 2>/dev/null | while read l ; do
     CMD umount $l
@@ -111,10 +128,18 @@ $GET $SRC | $unpack -dc > $DEST || FAIL "write / decompression"
 echo wait...
 sync
 
-gpt_fix $DEST
+#gpt_fix $DEST
 
 echo "$TITLE - DONE"
 
 blkid $DEST*
 
 sleep 1
+
+exit 0
+
+<<END
+
+# EXAMPLES
+
+TEST=1 DL=192.168.31.61:8081/.images/vim4 sh /scripts/install/Ubuntu-vim4-install.sh
