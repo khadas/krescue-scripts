@@ -13,9 +13,9 @@ development boards.
 
 https://armbian.com https://docs.armbian.com https://forum.armbian.com
 
-    REL=? from Aug 26 2021
+    REL=? from Thu 02 Mar 2023 03:43:21 AM UTC
 
-    TYPES= Bullseye | Buster | Focal | Hirsute ...
+    TYPES= Bullseye | Jammy ...
     BOARDS= VIM1 | VIM2 | VIM3 | VIM3L | Edge
 
 " #DESCRIPTION_END
@@ -76,22 +76,28 @@ TITLE="Armbian-Linux $REL($REL_DATE) - installation for: $BOARD ..."
 
 [ "$TYPE" ] || \
     case $BOARD in
-	VIM3L)
+#	VIM3L)
+#    dialog --title "$TITLE" --menu \
+#    "Select installation TYPE:" 0 0 0 \
+#    "Buster_current" "Debian - Buster 10.x" \
+#    "Focal_current" "Ubuntu - Focal 20.x" \
+#    "Hirsute_edge_budgie" "Ubuntu - Hirsute Budgie 21.x" \
+#    "Hirsute_edge_cinnamon" "Ubuntu - Hirsute Cinnamon 21.x" \
+#    "Hirsute_edge_xfce" "Ubuntu - Hirsute Xfce 21.x" \
+#    "nightly" "Nightly - testing ..." \
+#    "archive" "Archive ..." \
+#    2>$GUI_SEL || exit 2
+#	;;
+	VIM3|VIM3L)
     dialog --title "$TITLE" --menu \
     "Select installation TYPE:" 0 0 0 \
-    "nightly" "Nightly - testing ..." \
-    "archive" "Archive ..." \
-    2>$GUI_SEL || exit 2
-	;;
-	VIM3)
-    dialog --title "$TITLE" --menu \
-    "Select installation TYPE:" 0 0 0 \
-    "Bullseye_current" "Debian - Bullseye 11.x" \
-    "Buster_current" "Debian - Buster 10.x" \
-    "Focal_current" "Ubuntu - Focal 20.x" \
-    "Hirsute_edge_budgie" "Ubuntu - Hirsute Budgie 21.x" \
-    "Hirsute_edge_cinnamon" "Ubuntu - Hirsute Cinnamon 21.x" \
-    "Hirsute_edge_xfce" "Ubuntu - Hirsute Xfce 21.x" \
+    "Jammy_current" "Ubuntu - Jammy 22.04.x - CLI" \
+    "Jammy_current_minimal" "Ubuntu - Jammy 22.04.x - Minimal" \
+    "Jammy_current_gnome" "Ubuntu - Jammy 22.04.x - Desktop Gnome" \
+    "Jammy_current_cinnamon" "Ubuntu - Jammy 22.04.x - Desktop Cinnamon" \
+    "Jammy_current_xfce" "Ubuntu - Jammy 22.04.x - Desktop XFCE" \
+    "Bullseye_current" "Debian - Bullseye 11.x - CLI" \
+    "Bullseye_minimal" "Debian - Bullseye 11.x - Minimal" \
     "nightly" "Nightly - testing ..." \
     "archive" "Archive ..." \
     2>$GUI_SEL || exit 2
@@ -204,6 +210,11 @@ case $DST in
     USB)  DEST=$(usb_disk || true)  ;;
     SD)   DEST=$(sd_disk || true)   ;;
 esac
+
+CMD(){
+    echo "# $@"
+    "$@"
+}
 
 [ -b "$DEST" ] || FAIL "$DST $DEST disk not found"
 
