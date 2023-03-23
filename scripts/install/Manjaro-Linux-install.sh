@@ -11,7 +11,7 @@ Manjaro-Linux
 Free fast and secure Linux based operating system for everyone, suitable
 replacement to Windows or MacOS with different Desktop Environments.
 
-    REL=21.12 from 20211215
+    REL=22.02 from 20220228
 
     TYPES= gnome | kde-plasma | mate | minimal | sway | xfce
     BOARDS= VIM2 | VIM3
@@ -47,15 +47,15 @@ GUI_SEL=/tmp/gui_sel
 #/vim3-images/releases/download/21.10/Manjaro-ARM-gnome-vim3-21.10.img.xz
 
 [ "$REL" ] || \
-    REL=21.12
+    REL=22.02
 
 case $REL in
-    21.10)
-    REL_DATE=20211018
-    FMT=img.xz
-    ;;
     21.12)
     REL_DATE=20211215
+    FMT=img.xz
+    ;;
+    22.02)
+    REL_DATE=20220228
     FMT=img.xz
     ;;
 esac
