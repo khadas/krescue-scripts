@@ -1,5 +1,5 @@
-# Krescue scripts (beta test)
+# OOWOW scripts
 
-Online scripts collection for Krescue
+Online scripts collection for OOWOW
 
-## rel v0.37
+## rel v0.38
