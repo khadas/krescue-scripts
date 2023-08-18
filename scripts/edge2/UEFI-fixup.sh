@@ -8,8 +8,13 @@ DESCRIPTION="\
 UEFI fix-up
 ===========
 
-    BOARDS= Edge2
+Update eMMC bootloader to UEFI
 
+Sources: https://github.com/edk2-porting/edk2-rk3588/releases/download
+Docs:    https://docs.khadas.com/products/sbc/edge2/troubleshooting/edge2-uboot-uefi
+
+    BOARDS= Edge2
+      NEED= Network
 " #DESCRIPTION_END
 
 LABEL="UEFI"
@@ -50,8 +55,6 @@ echo "# $@">&2
 "$@"
 }
 
-
-
 GUI_SEL=/tmp/gui_sel
 
 echo "$BOARDS" | grep -q -m1 "$BOARD" || FAIL "Not suitable for $BOARD device"
@@ -91,3 +94,16 @@ dialog --title "Done" \
 UEFI bootloader was updated to $SRC
 " \
     0 0
+
+exit 0
+
+## __END__
+
+<<END
+
+Links
+
+    https://opensource.rock-chips.com/wiki_Boot_option
+    https://opensource.rock-chips.com/wiki_U-Boot
+    https://github.com/edk2-porting/edk2-rk35xx/releases
+
