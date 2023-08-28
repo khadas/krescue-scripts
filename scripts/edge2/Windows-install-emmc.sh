@@ -17,7 +17,7 @@ LABEL="Windows"
 BOARDS="Edge2 "
 
 REL=arm
-SRC=${SRC:-edge2-windows-11-$REL.img.gz}
+SRC=${SRC:-edge2-windows-11-$REL.img.zst}
 BASE=https://dl.khadas.com/products/edge2/firmware/.windows
 
 DL=${DL:-$BASE/$SRC}
@@ -63,6 +63,7 @@ FROM : $DL
 TO   : $DST
 ----------
 WARN: All stored data on eMMC will be lost !!!
+      Installation need stable internet connection !!!
 ----------
 "
 
@@ -73,7 +74,19 @@ dialog --title "$TITLE" \
 
 echo "[i] download $DL and write to $DST"
 echo "[i] WAIT .... its can be long"
-curl -jkL $DL | zstd -dc > $DST
+curl -f -jkL $DL | zstd -dc > $DST || {
+
+sleep 2
+dialog --title "Error" \
+    --no-collapse \
+    --msgbox "
+Installation was failed... Please try again...
+" \
+    0 0
+
+exit 1
+
+}
 
 dialog --title "Done" \
     --no-collapse \
