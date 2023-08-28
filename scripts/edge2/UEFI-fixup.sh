@@ -27,11 +27,11 @@ BOARDS="Edge2 "
 #BASE=https://github.com/edk2-porting/edk2-rk3588/releases/download
 
 REL=${REL:-dbaeeac}
-SRC=${SRC:-edge2-uefi-release-$REL.img}
-BASE=https://dl.khadas.com/products/edge2/firmware/UEFI/
+SRC=${SRC:-edge2-uefi-release-$REL.img.gz}
+BASE=https://dl.khadas.com/products/edge2/firmware/UEFI
 
-IMG="/tmp/$SRC"
-DL=${DL:-$BASE/$REL/$SRC}
+IMG="/tmp/${SRC%.gz}"
+DL=${DL:-$BASE/$SRC}
 
 TITLE="$BOARD fix-up UEFI"
 
@@ -86,7 +86,13 @@ dialog --title "$TITLE" \
 
 DL(){
     [ -s $IMG.checked ] && return 0
-    CMD curl -A downloader -jkL "$@" || return 1
+    CMD curl -f -A downloader -jkL "$@" || return 1
+    case $DL in
+	*.gz)
+	CMD pigz -cd $IMG > $IMG.test || return 2
+	CMD mv $IMG.test $IMG || return 3
+    ;;
+    esac
     md5sum $IMG > $IMG.checked
 }
 
