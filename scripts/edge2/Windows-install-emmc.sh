@@ -65,6 +65,10 @@ TO   : $DST
 WARN: All stored data on eMMC will be lost !!!
       Installation need stable internet connection !!!
 ----------
+TIP:  During windows setup
+      Shift+F10 type oobe\bypassnro press Enter to
+             reboot and skip network request
+
 "
 
 dialog --title "$TITLE" \
@@ -72,7 +76,7 @@ dialog --title "$TITLE" \
     --yesno "$MSG" \
     0 0 2>$GUI_SEL || exit
 
-echo "[i] download $DL and write to $DST"
+echo "[i] Download $DL write> $DST"
 echo "[i] WAIT .... its can be long"
 curl -f -jkL $DL | zstd -dc > $DST || {
 
