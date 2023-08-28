@@ -2,4 +2,4 @@
 
 Online scripts collection for OOWOW
 
-## rel v0.39
+## rel v0.40
