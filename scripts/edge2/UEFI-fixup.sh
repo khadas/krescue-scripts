@@ -10,7 +10,9 @@ UEFI fix-up
 
 Update eMMC bootloader to UEFI
 
-Sources: https://github.com/edk2-porting/edk2-rk3588/releases/download
+DL:      https://dl.khadas.com/products/edge2/firmware/UEFI/
+Sources: https://github.com/edk2-porting/edk2-rk3588
+Actual:  https://github.com/edk2-porting/edk2-rk3588/suites/15541896185/artifacts/886911610
 Docs:    https://docs.khadas.com/products/sbc/edge2/troubleshooting/edge2-uboot-uefi
 
     BOARDS= Edge2
@@ -20,11 +22,15 @@ Docs:    https://docs.khadas.com/products/sbc/edge2/troubleshooting/edge2-uboot-
 LABEL="UEFI"
 BOARDS="Edge2 "
 
-REL=${REL:-v0.7.1}
-SRC=${SRC:-edge2_UEFI_Release_$REL.img}
-BASE=https://github.com/edk2-porting/edk2-rk3588/releases/download
-IMG="/tmp/$SRC"
+#REL=${REL:-v0.7.1}
+#SRC=${SRC:-edge2_UEFI_Release_$REL.img}
+#BASE=https://github.com/edk2-porting/edk2-rk3588/releases/download
 
+REL=${REL:-dbaeeac}
+SRC=${SRC:-edge2-uefi-release-$REL.img}
+BASE=https://dl.khadas.com/products/edge2/firmware/UEFI/
+
+IMG="/tmp/$SRC"
 DL=${DL:-$BASE/$REL/$SRC}
 
 TITLE="$BOARD fix-up UEFI"
@@ -86,7 +92,11 @@ DL(){
 
 DL $DL -o $IMG || FAIL "Download $DL"
 
-CMD dd skip=2048 seek=$((0x4000)) count=$((0x4000)) of=$DST if=$IMG conv=fsync,notrunc || FAIL "Fail update $SRC to $DST error: $?"
+#COUNT=${COUNT:-0x4000} # max size nvme override
+COUNT=${COUNT:-0x3600} # printf %X $((0x6c0000/512)) do not nvme override
+
+CMD dd skip=2048 seek=$((0x4000)) \
+    count=$(($COUNT)) of=$DST if=$IMG conv=fsync,notrunc || FAIL "Fail update $SRC to $DST error: $?"
 
 dialog --title "Done" \
     --no-collapse \
